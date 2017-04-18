@@ -1,5 +1,8 @@
 # CHANGELOG: Spell Check
 
+### 1.0.3
+Adding possibility to specify local AtD server URIs also in User/Workspace settings.
+
 ### 1.0.2
 Adding possibility to specify local AtD server URIs.
 

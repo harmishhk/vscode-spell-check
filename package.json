@@ -3,7 +3,7 @@
     "displayName": "Spelling and Grammar Checker",
     "description": "Uses a web service to detect mistakes and suggest fixes - great for Markdown or any text file.",
     "icon": "images/spellIcon.svg",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "publisher": "harmishhk",
     "galleryBanner": {
         "color": "#5c2d91",
@@ -37,7 +37,23 @@
                 "command": "editor.action.quickFix",
                 "key": "Alt+."
             }
-        ]
+        ],
+        "configuration": {
+			"title": "Spell options",
+			"properties": {
+				"spell.languageURIs": {
+					"type": "object",
+					"default": {
+                        "en": "https://www.polishmywriting.com/proxy.php?url=/checkDocument",
+                        "fr": "https://fr.service.afterthedeadline.com/checkDocument",
+                        "de": "https://de.service.afterthedeadline.com/checkDocument",
+                        "pt": "https://pt.service.afterthedeadline.com/checkDocument",
+                        "es": "https://es.service.afterthedeadline.com/checkDocument"
+                    },
+					"description": "URIs for AtD server for supported languages."
+				}
+			}
+		}
     },
     "main": "./out/extension",
     "scripts": {

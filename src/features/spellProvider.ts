@@ -322,6 +322,15 @@ export default class SpellProvider implements vscode.CodeActionProvider {
             if (cfg.languageIDs === undefined) cfg.languageIDs = ["markdown"];
             if (cfg.language === undefined) cfg.language = "en";
             if (cfg.ignoreRegExp === undefined) cfg.ignoreRegExp = [];
+            if (cfg.languageURIs === undefined) cfg.languageURIs = [];
+
+            const config = vscode.workspace.getConfiguration('spell');
+            const wsLanguageURIs = config.get('languageURIs') as {}[];
+            for (var key in wsLanguageURIs) {
+                if (!(key in cfg.languageURIs)) {
+                    cfg.languageURIs[key] = wsLanguageURIs[key];
+                }
+            }
 
             return cfg;
         }
@@ -440,16 +449,13 @@ export default class SpellProvider implements vscode.CodeActionProvider {
             }
         }
 
-        function GetURI(language: String): String {
+        function GetURI(language: string): string {
             let languageURIs = settings.languageURIs || [];
 
-            switch (language) {
-                case 'en': return languageURIs['en'] || 'https://www.polishmywriting.com/proxy.php?url=/checkDocument';
-                case 'fr': return languageURIs['fr'] || 'https://fr.service.afterthedeadline.com/checkDocument';
-                case 'de': return languageURIs['de'] || 'https://de.service.afterthedeadline.com/checkDocument';
-                case 'pt': return languageURIs['pt'] || 'https://pt.service.afterthedeadline.com/checkDocument';
-                case 'es': return languageURIs['es'] || 'https://es.service.afterthedeadline.com/checkDocument';
-                default: return 'https://www.polishmywriting.com/proxy.php?url=/checkDocument';
+            if (language in languageURIs){
+                return languageURIs[language];
+            } else {
+                return languageURIs['en'];
             }
         }
 
@@ -467,7 +473,7 @@ export default class SpellProvider implements vscode.CodeActionProvider {
             pattern = pattern.replace(/\\\\/g, "\\");
             let regex = new RegExp(pattern, flags);
 
-            if (DEBUG) console.log("Ignoreing [" + expressions[x] + "]");
+            if (DEBUG) console.log("Ignoring [" + expressions[x] + "]");
 
             match = content.match(regex);
             if (match !== null) {
@@ -492,11 +498,12 @@ export default class SpellProvider implements vscode.CodeActionProvider {
     public changeLanguage() {
         let items: vscode.QuickPickItem[] = [];
 
-        items.push({ label: getLanguageDescription("en"), description: "en" });
-        items.push({ label: getLanguageDescription("fr"), description: "fr" });
-        items.push({ label: getLanguageDescription("de"), description: "de" });
-        items.push({ label: getLanguageDescription("pt"), description: "pt" });
-        items.push({ label: getLanguageDescription("es"), description: "es" });
+        let languageURIs = settings.languageURIs;
+
+        for (var key in settings.languageURIs) {
+            items.push({ label: getLanguageDescription(key), description: key });
+        }
+
         let index: number;
         for (let i = 0; i < items.length; i++) {
             let element = items[i];
@@ -531,7 +538,7 @@ export default class SpellProvider implements vscode.CodeActionProvider {
                 case "es":
                     return "Spanish";
                 default:
-                    return "English";
+                    return initial;
             }
         }
     }
