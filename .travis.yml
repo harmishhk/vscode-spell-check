@@ -1,0 +1,18 @@
+sudo: false
+os: linux
+dist: trusty
+language: node_js
+node_js: '7'
+install:
+- npm install
+- npm install -g vsce
+- vsce package
+deploy:
+  provider: releases
+  api_key:
+    secure: ZeZM5uRh3PztzLo1yfMXBwUB8GJG+JtucwUEknCr/JafgnNPbHZ4jv8cMVnEFfP1P23vHEJ91W3vO++/q91cOifzUFE5oNALdlrgxyUW9kD2FextALChuqxfneCjLVcYFGTDlilIEoNNbt6kmfGAZkIyD9BmSNxl8hlyHHh9xuiPLVDuwlleE04sMxDsUIoYV75UrscLdfjmUSXD8xx2bWJjtikEpctwvArwcPgZ79aQZEl/GmV6OxJHHZQMsEWur53nn8J0ZcOQvqyPeA0a4QRUvxD9dLeVfHeqbUaLnFOp+JgplB5nPrg1CFZ1RDZIK1VVj/pUhYzoVnwYy4IdOxK+lLQCwk6XNLn8irRvJDCHjvy7M5I4m/ThmcltOl4I+Z91Hq0LtYt35GT1/E0B+D/Kvg6cMQsC8Pa1jNrYbNFKcZn8OgdFxvwgyxWdHxRD16LwNiRhoQSlQM2YvE1Zakl0vpIkO1Jk5m0rfgA9f6W0BeFCR1/XfoFDfejtoEDOsDXmaQSECEiMWVyXUWONdxelPo0ONW1ripFxavTDLgVefvNg3JLsp3DM8v3pze/ewjrysRNsTbKVzM2jNriMFJJYlWIokFCnnTRgLqhiiNrknOLTxhQbz169gD1grgq1AaqslNTdn0nE6LLioFk1RICggH6ldewwdPGcmlvCc7E=
+  file: 'Spell-$TRAVIS_TAG.vsix'
+  skip_cleanup: true
+  on:
+    repo: harmishhk/vscode-spell-check
+    tags: true
