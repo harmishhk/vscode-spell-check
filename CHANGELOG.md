@@ -1,9 +1,12 @@
 # CHANGELOG: Spell Check
 
-### 1.0.0 
+### 1.0.0
+Resurrecting.
+
+### 1.0.0
 Added guidance to un-install extension based on instability of the underlying service with a suggestion to leverage another one of the options out there.
 
-### 0.9.1 
+### 0.9.1
 Changed English URI for checking as previous one stoped working.  Replaced teacher module to speed up adoption of new URI.  Moved change history to [CHANGELOG](CHANGELOG.md).  Fix for error on empty document well when toggling - thx [DonJayamanne](https://github.com/DonJayamanne).
 
 ### 0.8.6
@@ -30,11 +33,11 @@ Improved `README.md` covering off settings for the `spell.json` file better.  If
 ### 0.5.1
 **Performance improvement** for activation event.
 
-### 0.5.0 
+### 0.5.0
 Added a new set of settings to **ignore chunks of text** that match provided regular expressions.
 
-### 0.4.0 
+### 0.4.0
 Added **add to ignore list** in suggest box, added ability to **check additional file types** (`languageIDs`), bug fixes
 
-### 0.3.0 
+### 0.3.0
 Added ability to **change language** that is checked (`en`, `de`, `fr`, ...)

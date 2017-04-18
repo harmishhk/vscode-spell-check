@@ -41,15 +41,6 @@ let CONFIGFILE = "/spell.json";
 let statusBarItem: vscode.StatusBarItem;
 let IsDisabled: boolean = false;
 
-enum upgradeAction {
-    Stop,
-    Search
-}
-
-interface UpgradeMessageItem extends vscode.MessageItem {
-    id: upgradeAction;
-}
-
 export default class SpellProvider implements vscode.CodeActionProvider {
     private validationDelayer: Map<Delayer<void>> = Object.create(null); // key is the URI of the document
 
@@ -63,29 +54,6 @@ export default class SpellProvider implements vscode.CodeActionProvider {
 
     public activate(context: vscode.ExtensionContext) {
         if (DEBUG) console.log("Spell and Grammar checker active...");
-
-        const config = vscode.workspace.getConfiguration('spell');
-
-        if (config.get("StopAsking", false)) {
-        	// do nothing
-        } else {
-            vscode.window.showWarningMessage<UpgradeMessageItem>(
-                'The Spell Checker Extension no longer works - please uninstall it and install another one.',
-                { title: "Show Suggested Replacement", id: upgradeAction.Search },
-                { title: "Don't Ask Again", id: upgradeAction.Stop, isCloseAffordance: true }
-            ).then(selection => {
-                switch (selection && selection.id) {
-                    case upgradeAction.Search:
-        				var open = require('open');
-                        open('https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker');
-                        break;
-                    case upgradeAction.Stop:
-                        config.update('StopAsking', true, true);
-        				console.log("Wrote setting...");
-                        break;
-                }
-            });
-        }
 
         let subscriptions: vscode.Disposable[] = context.subscriptions;
         let toggleCmd: vscode.Disposable;
@@ -302,7 +270,7 @@ export default class SpellProvider implements vscode.CodeActionProvider {
             diagnosticMap[document.uri.toString()] = diagnostics;
             spellDiagnostics.set(document.uri, diagnostics);
 
-            // Insert the new text			
+            // Insert the new text
             let edit = new vscode.WorkspaceEdit();
             edit.replace(document.uri, diagnostic.range, suggestion);
             return vscode.workspace.applyEdit(edit);
