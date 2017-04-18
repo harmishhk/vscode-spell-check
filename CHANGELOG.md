@@ -1,6 +1,9 @@
 # CHANGELOG: Spell Check
 
-### 1.0.0
+### 1.0.2
+Adding possibility to specify local AtD server URIs.
+
+### 1.0.1
 Resurrecting.
 
 ### 1.0.0
