@@ -3,7 +3,7 @@
     "displayName": "Spelling and Grammar Checker",
     "description": "Uses a web service to detect mistakes and suggest fixes - great for Markdown or any text file.",
     "icon": "images/spellIcon.svg",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "publisher": "harmishhk",
     "galleryBanner": {
         "color": "#5c2d91",
@@ -25,13 +25,6 @@
         "*"
     ],
     "contributes": {
-        "commands": [
-            {
-                "command": "SpellProvider.changeLanguage",
-                "title": "Change Language",
-                "category": "Spell Checker"
-            }
-        ],
         "keybindings": [
             {
                 "command": "editor.action.quickFix",
@@ -41,6 +34,34 @@
         "configuration": {
 			"title": "Spell options",
 			"properties": {
+				"spell.copySettings": {
+					"type": "object",
+					"default": {},
+					"description": "Other user settings to copy from, you must check if the types are matching."
+				},
+				"spell.ignoreRegExp": {
+					"type": "array",
+					"default": [],
+					"description": "RegExp for words to ignore."
+				},
+				"spell.ignoreWordsList": {
+					"type": "array",
+					"default": [],
+					"description": "List of words to ignore."
+				},
+				"spell.language": {
+					"type": "string",
+					"default": "en",
+					"description": "Language for spell-checking."
+				},
+				"spell.languageIDs": {
+					"type": "array",
+					"default": [
+                        "markdown",
+                        "latex"
+                    ],
+					"description": "Filetypes for which spell checker is enabled."
+				},
 				"spell.languageURIs": {
 					"type": "object",
 					"default": {
@@ -51,6 +72,35 @@
                         "es": "https://es.service.afterthedeadline.com/checkDocument"
                     },
 					"description": "URIs for AtD server for supported languages."
+				},
+				"spell.mistakeTypeToStatus": {
+					"type": "object",
+					"default": {
+                        "Bias Language": "Disable",
+                        "Cliches": "Disable",
+                        "Combine...": "Disable",
+                        "Complex Expression": "Disable",
+                        "Diacritical Marks": "Disable",
+                        "Did you mean...": "Information",
+                        "Double Negative": "Disable",
+                        "Hidden Verbs": "Information",
+                        "Hyphen Required": "Warning",
+                        "Jargon Language": "Disable",
+                        "Make I uppercase": "Disable",
+                        "Missing Word": "Information",
+                        "Missing apostrophe": "Disable",
+                        "Passive voice": "Disable",
+                        "Phrases to Avoid": "Disable",
+                        "Possessive Ending": "Disable",
+                        "Redundant contraction": "Disable",
+                        "Redundant Expression": "Disable",
+                        "Repeated Word": "Disable",
+                        "Revise...": "Disable",
+                        "Separate...": "Information",
+                        "Spelling": "Error",
+                        "Wrong article": "Disable"
+                    },
+					"description": "AtD settings."
 				}
 			}
 		}

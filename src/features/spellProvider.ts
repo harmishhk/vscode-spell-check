@@ -8,12 +8,12 @@ import * as callATD from './callATD';
 let DEBUG: boolean = false;
 
 interface SpellSettings {
-    language: string,
-    languageURIs: {}[],
-    ignoreWordsList: string[];
-    mistakeTypeToStatus: {}[];
-    languageIDs: string[];
     ignoreRegExp: string[];
+    ignoreWordsList: string[];
+    language: string,
+    languageIDs: string[];
+    languageURIs: {}[],
+    mistakeTypeToStatus: {}[];
 }
 
 interface SpellProblem {
@@ -45,13 +45,13 @@ let IsDisabled: boolean = false;
 export default class SpellProvider implements vscode.CodeActionProvider {
     private validationDelayer: Map<Delayer<void>> = Object.create(null); // key is the URI of the document
 
-    private static addToDictionaryCmdId: string = 'SpellProvider.addToDictionary';
+    // private static addToDictionaryCmdId: string = 'SpellProvider.addToDictionary';
     private static fixOnSuggestionCmdId: string = 'SpellProvider.fixOnSuggestion';
-    private static changeLanguageCmdId: string = 'SpellProvider.changeLanguage';
+    // private static changeLanguageCmdId: string = 'SpellProvider.changeLanguage';
 
-    private addToDictionaryCmd: vscode.Disposable;
+    // private addToDictionaryCmd: vscode.Disposable;
     private fixOnSuggestionCmd: vscode.Disposable;
-    private changeLanguageCmd: vscode.Disposable;
+    // private changeLanguageCmd: vscode.Disposable;
 
     public activate(context: vscode.ExtensionContext) {
         if (DEBUG) console.log("Spell and Grammar checker active...");
@@ -67,9 +67,9 @@ export default class SpellProvider implements vscode.CodeActionProvider {
 
         settings = this.readSettings();
 
-        this.addToDictionaryCmd = vscode.commands.registerCommand(SpellProvider.addToDictionaryCmdId, this.addToDictionary.bind(this));
+        // this.addToDictionaryCmd = vscode.commands.registerCommand(SpellProvider.addToDictionaryCmdId, this.addToDictionary.bind(this));
         this.fixOnSuggestionCmd = vscode.commands.registerCommand(SpellProvider.fixOnSuggestionCmdId, this.fixOnSuggestion.bind(this));
-        this.changeLanguageCmd = vscode.commands.registerCommand(SpellProvider.changeLanguageCmdId, this.changeLanguage.bind(this));
+        // this.changeLanguageCmd = vscode.commands.registerCommand(SpellProvider.changeLanguageCmdId, this.changeLanguage.bind(this));
 
         subscriptions.push(this);
 
@@ -120,9 +120,9 @@ export default class SpellProvider implements vscode.CodeActionProvider {
         spellDiagnostics.clear();
         spellDiagnostics.dispose();
         statusBarItem.dispose();
-        this.addToDictionaryCmd.dispose();
+        // this.addToDictionaryCmd.dispose();
         this.fixOnSuggestionCmd.dispose();
-        this.changeLanguageCmd.dispose();
+        // this.changeLanguageCmd.dispose();
     }
 
     public provideCodeActions(document: vscode.TextDocument, range: vscode.Range, context: vscode.CodeActionContext, token: vscode.CancellationToken): vscode.Command[] {
@@ -160,12 +160,12 @@ export default class SpellProvider implements vscode.CodeActionProvider {
                 });
             });
         }
-        // Add ignore command
-        commands.push({
-            title: 'Add \'' + error + '\' to ignore list',
-            command: SpellProvider.addToDictionaryCmdId,
-            arguments: [document, error]
-        });
+        // // Add ignore command
+        // commands.push({
+        //     title: 'Add \'' + error + '\' to ignore list',
+        //     command: SpellProvider.addToDictionaryCmdId,
+        //     arguments: [document, error]
+        // });
 
         return commands;
     }
@@ -232,17 +232,17 @@ export default class SpellProvider implements vscode.CodeActionProvider {
         });
     }
 
-    private addToDictionary(document: vscode.TextDocument, word: string): any {
-        if (DEBUG) console.log("Attempting to add to dictionary: " + word)
+    // private addToDictionary(document: vscode.TextDocument, word: string): any {
+    //     if (DEBUG) console.log("Attempting to add to dictionary: " + word)
 
-        // only add if it's not already there
-        if (settings.ignoreWordsList.indexOf(word) === -1) {
-            if (DEBUG) console.log("Word is not found in current dictionary -> adding")
-            settings.ignoreWordsList.push(word);
-            this.writeSettings();
-        }
-        this.TriggerDiagnostics(document);
-    }
+    //     // only add if it's not already there
+    //     if (settings.ignoreWordsList.indexOf(word) === -1) {
+    //         if (DEBUG) console.log("Word is not found in current dictionary -> adding")
+    //         settings.ignoreWordsList.push(word);
+    //         this.writeSettings();
+    //     }
+    //     this.TriggerDiagnostics(document);
+    // }
 
     private writeSettings(): void {
         try {
@@ -282,67 +282,30 @@ export default class SpellProvider implements vscode.CodeActionProvider {
     }
 
     private readSettings(): SpellSettings {
-        let cfg: any = readJsonFile(vscode.workspace.rootPath + CONFIGFOLDER + CONFIGFILE);
+        const config = vscode.workspace.getConfiguration('spell');
 
-        function readJsonFile(file): any {
-            let cfg;
-            try {
-                cfg = JSON.parse(fs.readFileSync(file).toString());
-                if (DEBUG) console.log("Settings read from: " + file)
-            }
-            catch (err) {
-                if (DEBUG) console.log("Default Settings")
-                cfg = JSON.parse('{\
-                                "version": "0.1.0", \
-                                "language": "en", \
-                                "ignoreWordsList": [], \
-                                "mistakeTypeToStatus": { \
-                                            "Passive voice": "Hint", \
-                                            "Spelling": "Error", \
-                                            "Complex Expression": "Disable", \
-                                            "Hidden Verbs": "Information", \
-                                            "Hyphen Required": "Disable", \
-                                            "Redundant Expression": "Disable", \
-                                            "Did you mean...": "Disable", \
-                                            "Repeated Word": "Warning", \
-                                            "Missing apostrophe": "Warning", \
-                                            "Cliches": "Disable", \
-                                            "Missing Word": "Disable", \
-                                            "Make I uppercase": "Warning" \
-                                    },\
-                                "languageIDs": ["markdown","plaintext"],\
-                                "ignoreRegExp": [ \
-                                    "/\\\\(.*\\\\.(jpg|jpeg|png|md|gif|JPG|JPEG|PNG|MD|GIF)\\\\)/g", \
-                                    "/((http|https|ftp|git)\\\\S*)/g" \
-                                 ]\
-                              }');
-            }
-
-            //gracefully handle new fields
-            if (cfg.languageIDs === undefined) cfg.languageIDs = ["markdown"];
-            if (cfg.language === undefined) cfg.language = "en";
-            if (cfg.ignoreRegExp === undefined) cfg.ignoreRegExp = [];
-            if (cfg.languageURIs === undefined) cfg.languageURIs = [];
-
-            const config = vscode.workspace.getConfiguration('spell');
-            const wsLanguageURIs = config.get('languageURIs') as {}[];
-            for (var key in wsLanguageURIs) {
-                if (!(key in cfg.languageURIs)) {
-                    cfg.languageURIs[key] = wsLanguageURIs[key];
-                }
-            }
-
-            return cfg;
+        const cfg = {
+            ignoreRegExp: config.get("ignoreRegExp") as string[],
+            ignoreWordsList: config.get("ignoreWordsList") as string[],
+            language: config.get("language") as string,
+            languageIDs: config.get("languageIDs") as string[],
+            languageURIs: config.get("languageURIs") as {}[],
+            mistakeTypeToStatus: config.get("mistakeTypeToStatus") as {}[]
         }
 
-        return {
-            language: cfg.language,
-            languageURIs: cfg.languageURIs,
-            ignoreWordsList: cfg.ignoreWordsList,
-            mistakeTypeToStatus: cfg.mistakeTypeToStatus,
-            languageIDs: cfg.languageIDs,
-            ignoreRegExp: cfg.ignoreRegExp
+        const copySettings = config.get("copySettings") as {}[];
+        for (var key in copySettings) {
+            const spellSetting = cfg[key];
+            let toCopySetting = (copySettings[key] as string).split(".");
+            if (toCopySetting.length == 2) {
+                const copyConfig = vscode.workspace.getConfiguration(toCopySetting[0]).get(toCopySetting[1]);
+                if (spellSetting != null && copyConfig != null) {
+                    cfg[key] = copyConfig;
+                };
+            }
         }
+
+        return cfg;
     }
 
     private convertSeverity(mistakeType: string): number {
@@ -470,7 +433,7 @@ export default class SpellProvider implements vscode.CodeActionProvider {
             let flags = expressions[x].replace(/.*\/([gimy]*)$/, '$1');
             let pattern = expressions[x].replace(new RegExp('^/(.*?)/' + flags + '$'), '$1');
 
-            pattern = pattern.replace(/\\\\/g, "\\");
+            // pattern = pattern.replace(/\\\\/g, "\\");
             let regex = new RegExp(pattern, flags);
 
             if (DEBUG) console.log("Ignoring [" + expressions[x] + "]");
@@ -495,51 +458,51 @@ export default class SpellProvider implements vscode.CodeActionProvider {
         return content;
     }
 
-    public changeLanguage() {
-        let items: vscode.QuickPickItem[] = [];
+    // public changeLanguage() {
+    //     let items: vscode.QuickPickItem[] = [];
 
-        let languageURIs = settings.languageURIs;
+    //     let languageURIs = settings.languageURIs;
 
-        for (var key in settings.languageURIs) {
-            items.push({ label: getLanguageDescription(key), description: key });
-        }
+    //     for (var key in settings.languageURIs) {
+    //         items.push({ label: getLanguageDescription(key), description: key });
+    //     }
 
-        let index: number;
-        for (let i = 0; i < items.length; i++) {
-            let element = items[i];
-            if (element.description == settings.language) {
-                index = i;
-                break;
-            }
-        }
-        items.splice(index, 1);
+    //     let index: number;
+    //     for (let i = 0; i < items.length; i++) {
+    //         let element = items[i];
+    //         if (element.description == settings.language) {
+    //             index = i;
+    //             break;
+    //         }
+    //     }
+    //     items.splice(index, 1);
 
-        // replace the text with the selection
-        vscode.window.showQuickPick(items).then((selection) => {
-            if (!selection) return;
+    //     // replace the text with the selection
+    //     vscode.window.showQuickPick(items).then((selection) => {
+    //         if (!selection) return;
 
-            settings.language = selection.description;
-            if (DEBUG) console.log("Attempting to change to: " + settings.language);
-            this.writeSettings();
-            vscode.window.showInformationMessage("To start checking in " + getLanguageDescription(settings.language)
-                + " reload window by pressing 'F1' + 'Reload Window'.")
-        });
+    //         settings.language = selection.description;
+    //         if (DEBUG) console.log("Attempting to change to: " + settings.language);
+    //         this.writeSettings();
+    //         vscode.window.showInformationMessage("To start checking in " + getLanguageDescription(settings.language)
+    //             + " reload window by pressing 'F1' + 'Reload Window'.")
+    //     });
 
-        function getLanguageDescription(initial: string): string {
-            switch (initial) {
-                case "en":
-                    return "English";
-                case "fr":
-                    return "French";
-                case "de":
-                    return "German";
-                case "pt":
-                    return "Portuguese";
-                case "es":
-                    return "Spanish";
-                default:
-                    return initial;
-            }
-        }
-    }
+    //     function getLanguageDescription(initial: string): string {
+    //         switch (initial) {
+    //             case "en":
+    //                 return "English";
+    //             case "fr":
+    //                 return "French";
+    //             case "de":
+    //                 return "German";
+    //             case "pt":
+    //                 return "Portuguese";
+    //             case "es":
+    //                 return "Spanish";
+    //             default:
+    //                 return initial;
+    //         }
+    //     }
+    // }
 }

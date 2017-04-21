@@ -1,5 +1,10 @@
 # CHANGELOG: Spell Check
 
+### 1.0.4
+Moving all settings to User/Workspace settings.
+Removing addToDictionary and changeLanguage as a consequence.
+Adding copySettings setting to copy settings from other User/Workspace settings.
+
 ### 1.0.3
 Adding possibility to specify local AtD server URIs also in User/Workspace settings.
 
