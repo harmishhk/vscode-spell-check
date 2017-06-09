@@ -1,5 +1,8 @@
 # CHANGELOG: Spell Check
 
+### 1.0.5
+Fixing bug: problems are repeated in the diagnostics panel.
+
 ### 1.0.4
 Moving all settings to User/Workspace settings.
 Removing addToDictionary and changeLanguage as a consequence.

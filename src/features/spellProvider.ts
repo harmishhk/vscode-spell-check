@@ -207,7 +207,7 @@ export default class SpellProvider implements vscode.CodeActionProvider {
         let docToCheck = document.getText();
 
         if (DEBUG) console.log("Starting new check on: " + document.fileName + " [" + document.languageId + "]");
-        problems = [];
+        // problems = [];
 
         // removeUnwantedText before processing the spell checker ignores a lot of chars so removing them aids in problem matching
         docToCheck = this.removeUnwantedText(docToCheck);
@@ -333,6 +333,7 @@ export default class SpellProvider implements vscode.CodeActionProvider {
         callATD.check(GetURI(settings.language), content, function (error, docProblems) {
             if (error != null) console.log(error);
             if (docProblems != null) {
+                problems = [];
                 for (let i = 0; i < docProblems.length; i++) {
 
                     let problem = docProblems[i];
